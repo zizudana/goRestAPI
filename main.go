@@ -42,5 +42,6 @@ func main() {
 	initEventContent(e)
 
 	// Start server
-	e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
+	//e.Logger.Fatal(e.Start(":" + os.Getenv("PORT")))
+	e.Logger.Fatal(e.Start(":1323"))
 }

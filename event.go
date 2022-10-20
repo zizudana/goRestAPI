@@ -10,25 +10,17 @@ import (
 )
 
 type eventStruct struct {
+	EventID string             `json:"id" bson:"id"`
 	CarName string             `json:"title" bson:"title"`
-	Users   string             `json:"display" bson:"display"`
+	Display string             `json:"display" bson:"display"`
 	Start   primitive.DateTime `json:"start" bson:"start"`
 	End     primitive.DateTime `json:"end" bson:"end"`
 }
 
-type eventStructWithObjectID struct {
-	ObjectID primitive.ObjectID `json:"_id" bson:"_id"`
-	ID       primitive.ObjectID `json:"id" bson:"id"`
-	CarName  string             `json:"title" bson:"title"`
-	Users    string             `json:"display" bson:"display"`
-	Start    primitive.DateTime `json:"start" bson:"start"`
-	End      primitive.DateTime `json:"end" bson:"end"`
-}
-
 func initEventContent(e *echo.Echo) {
-	e.POST("/events", createEvent)
 	e.GET("/events/all", readAllEvent)
-	e.DELETE("/events", deleteEvent)
+	e.POST("/events/add", createEvent)
+	e.DELETE("/events/:id", deleteEvent)
 }
 
 func createEvent(c echo.Context) error {
@@ -42,8 +34,6 @@ func createEvent(c echo.Context) error {
 		newEvent,
 	)
 	errCheck(err)
-
-	fmt.Println(newEvent)
 
 	return c.JSON(http.StatusCreated, insertOneResult)
 }
@@ -82,19 +72,18 @@ func readAllEvent(c echo.Context) error {
 }
 
 func deleteEvent(c echo.Context) error {
-	hex := c.QueryParam("objectid")
-	objectID, err := primitive.ObjectIDFromHex(hex)
-	errCheck(err)
+	hex := c.Param("id")
+	fmt.Println("SUCCESS deleteVideo : ", hex)
 
-	deleteResult, err := collection["event"].DeleteOne(
+	//objectID, err := primitive.ObjectIDFromHex(hex)
+	//errCheck(err)
+	deleteResult, err := collection["car_event"].DeleteOne(
 		ctx,
-		bson.M{
-			"_id": objectID,
-		},
+		bson.M{"id": hex},
 	)
 	errCheck(err)
 
-	//logger.Info("SUCCESS deleteVideo : %s", hex)
+	fmt.Println("SUCCESS deleteVideo : ", hex)
 
 	return c.JSON(http.StatusOK, deleteResult)
 }
